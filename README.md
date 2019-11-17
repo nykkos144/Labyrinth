@@ -1,6 +1,9 @@
 # Labyrinth
 Problem :
-  - prints all paths.
+  - prints all paths and not just the shortest one.
   
-  - I will add to it for the drawing of the maze
+  
+ Soon to be added:
+  - drawing of the maze.
+  - animation on the svg image.
   
