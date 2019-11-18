@@ -11,13 +11,42 @@ let maze =
 		['*', ' ', '*', '*', '*', '*', '*'],
     ];
 
-let steps = 0;
+// path and position
 
-let start = {row: 1, col: 1, path: []};
+let start = findStartPosition(maze)
+    
+function findStartPosition(maze) {
+    for (let row = 0; row < maze.length ; row ++) {
+        for (let col = 0; col < maze[0].length ; col ++) {
+            if (maze[row][col] == 's') {
+                return {row:row , col:col , path: []};
+            }
+        }
+    }
+}
+// path and position
+
+
+// just position
+let startPosition = StartPosition(maze)
+    
+function StartPosition(maze) {
+    for (let row = 0; row < maze.length ; row ++) {
+        for (let col = 0; col < maze[0].length ; col ++) {
+            if (maze[row][col] == 's') {
+                return {row:row , col:col};
+            }
+        }
+    }
+}
+
 let queue = [];
 
-let minSteps = 1000000;
+let steps = 0;
+
+let pathLength = 300;
 let shortestPath = [];
+let exit = {};
 
 let end = false;
 
@@ -29,11 +58,10 @@ function algorithm(maze) {
 
     while(queue.length > 0) {
 
-        steps += 1
         let pos = queue.shift();
  
-        addNode({row:pos.row+1, col:pos.col, path:pos.path});
-        addNode({row:pos.row-1, col:pos.col, path:pos.path});
+        addNode({row:pos.row + 1, col:pos.col, path:pos.path});
+        addNode({row:pos.row - 1, col:pos.col, path:pos.path});
         addNode({row:pos.row, col:pos.col+1, path:pos.path});
         addNode({row:pos.row, col:pos.col-1, path:pos.path});
     }
@@ -42,7 +70,7 @@ function algorithm(maze) {
         console.log("You will never leave the maze!!!");
     }
 }
- 
+
 function addNode(pos) {
 
     if(!inMaze(pos)) {
@@ -50,16 +78,14 @@ function addNode(pos) {
         show(pos);
         return;
     }
-    if(maze[pos.row][pos.col] === ' ') {
-        let secondPath = pos.path.slice();
-        
-        if (minSteps > steps) {
-            minSteps = steps;
-        }
-        secondPath.push({row:pos.row, col:pos.col});
-        queue.push({row:pos.row, col:pos.col, path:secondPath});
 
-        maze[pos.row][pos.col] = steps;
+    if(maze[pos.row][pos.col] === ' ') {
+        let newPath = pos.path.slice();
+                
+        newPath.push({row:pos.row, col:pos.col});
+        queue.push({row:pos.row, col:pos.col, path:newPath});
+        maze[pos.row][pos.col] = 0;
+
     }
 }
 
@@ -75,14 +101,22 @@ function inMaze(pos) {
 function show(pos) {
     let path = pos.path;
 
-    console.log('Shortest path: ')
-
-    path.forEach(step => {
-        console.log(step);
-    });
-    console.log("Exit");
+    if (pathLength > path.length) {
+        pathLength = path.length
+        shortestPath = path;
+        exit = {row:pos.row , col:pos.col};
+    }    
     
 }
 
+if (end) {
+    console.log('step', steps - steps , 'START' , startPosition);
 
-console.log(maze)
+    shortestPath.forEach(node => { 
+
+        steps ++;
+        console.log('step' ,steps , node)
+    });
+
+    console.log('step' ,steps + 1 , `EXIT` , exit);
+}
