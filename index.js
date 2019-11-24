@@ -1,122 +1,215 @@
+let template = document.getElementById('app');
+
 let maze = 
     [
-		['*', '*', '*', ' ', '*', '*', '*'],
-		['*', 's', '*', ' ', ' ', '*', '*'],
-		['*', ' ', '*', '*', ' ', ' ', ' '],
-		['*', ' ', ' ', '*', ' ', '*', '*'],
-		['*', ' ', ' ', ' ', ' ', '*', '*'],
-		['*', '*', '*', ' ', '*', '*', '*'],
-		['*', ' ', ' ', ' ', '*', '*', '*'],
-		['*', ' ', '*', '*', '*', '*', '*'],
-		['*', ' ', '*', '*', '*', '*', '*'],
-    ];
+		['*', '*', '*', '*', ' ', ' ', '*', ' ', '*', '*'],
+		['*', ' ', ' ', ' ', '*', '*', ' ', '*', ' ', '*'],
+		['*', ' ', '*', ' ', ' ', '*', ' ', '*', ' ', '*'],
+		['*', ' ', '*', '*', ' ', '*', ' ', '*', '*', '*'],
+		['*', ' ', ' ', '*', ' ', ' ', ' ', '*', ' ', ' '],
+		['*', ' ', '*', '*', ' ', '*', ' ', '*', ' ', '*'],
+		['*', ' ', ' ', ' ', ' ', '*', ' ', ' ', ' ', '*'],
+		['*', '*', '*', '*', '*', '*', '*', '*', ' ', '*'],
+    ];   
 
-// path and position
+////////////////// DRAWING MAZE //////////////////
 
-let start = findStartPosition(maze)
-    
-function findStartPosition(maze) {
-    for (let row = 0; row < maze.length ; row ++) {
-        for (let col = 0; col < maze[0].length ; col ++) {
-            if (maze[row][col] == 's') {
-                return {row:row , col:col , path: []};
-            }
+let size = 73;
+
+let height = maze.length;
+let width = maze[0].length;
+
+let canvas = document.createElementNS('http://www.w3.org/2000/svg' , 'svg');
+
+canvas.setAttribute('width' , width*size);
+canvas.setAttribute('height' , height*size);
+
+let appendElement = (canvas , node , maze) => {
+    let colors = {
+        '*' : '#1670f0',
+        ' ' : 'white'
+    };
+
+    let blockRef = document.createElementNS('http://www.w3.org/2000/svg' , 'rect')
+        blockRef.setAttribute('height' , size);
+        blockRef.setAttribute('width' , size);
+        blockRef.setAttribute('x' , node.x*size);
+        blockRef.setAttribute('y' , node.y*size);
+        blockRef.setAttribute('fill' , colors[maze[node.y][node.x]]);      
+    canvas.appendChild(blockRef);
+}
+
+maze.map((row , y , arr) => {
+    row.map((col , x) => {
+        appendElement(canvas , {x , y} , maze);
+    })
+});
+
+template.appendChild(canvas);
+
+let circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
+    circle.setAttribute('stroke', 'black');
+    circle.setAttribute('stroke-width', '2');
+    circle.setAttribute('fill', '#1670f0');
+
+
+/////////////////// PICK POSITION /////////////////
+
+
+document.getElementById('print').innerHTML = 'Choose position!'
+
+let rowY , colX;
+function pickStart(event) {
+
+    let done = false;
+
+    document.getElementById('print').innerHTML = 'Position chosen!'
+
+    if (!done) {
+        let clickX , clickY
+
+        if (event.offsetX) {
+            clickX = event.offsetX;
+            clickY = event.offsetY;
+        }
+
+        colX = Math.floor(clickX / 73);
+        rowY = Math.floor(clickY / 73);
+
+        if (maze[rowY][colX] != '*') {
+            
+            circle.setAttribute('r', 30);
+            circle.setAttribute('cx', colX * 73 + 35);
+            circle.setAttribute('cy', rowY * 73 + 35);
+        
+            canvas.appendChild(circle);
+            template.appendChild(canvas);
+
+            done = true;
+            console.log(clickX , clickY);
+            console.log(rowY , colX);
+        }
+        if (maze[rowY][colX] == '*') {
+            document.getElementById('print').innerHTML = 'You are stuck in the wall!'
         }
     }
-}
-// path and position
+}  
 
 
-// just position
-let startPosition = StartPosition(maze)
+
+/////////////////// PLAY ///////////////////
+
+
+let coordinates = [];
+
+
+function play(event) { 
+
+    let maze = 
+    [
+		['*', '*', '*', '*', ' ', ' ', '*', ' ', '*', '*'],
+		['*', ' ', ' ', ' ', '*', '*', ' ', '*', ' ', '*'],
+		['*', ' ', '*', ' ', ' ', '*', ' ', '*', ' ', '*'],
+		['*', ' ', '*', '*', ' ', '*', ' ', '*', '*', '*'],
+		['*', ' ', ' ', '*', ' ', ' ', ' ', '*', ' ', ' '],
+		['*', ' ', '*', '*', ' ', '*', ' ', '*', ' ', '*'],
+		['*', ' ', ' ', ' ', ' ', '*', ' ', ' ', ' ', '*'],
+		['*', '*', '*', '*', '*', '*', '*', '*', ' ', '*'],
+    ];   
+
+
+    let end = false;
+    let exitExist = false;
+
+    let start = {row:rowY , col:colX , path: []};
     
-function StartPosition(maze) {
-    for (let row = 0; row < maze.length ; row ++) {
-        for (let col = 0; col < maze[0].length ; col ++) {
-            if (maze[row][col] == 's') {
-                return {row:row , col:col};
-            }
+    let startPosition = {row:rowY , col:colX};
+
+    let queue = [];
+
+    let steps = 0;
+
+    let pathLength = 1000;
+
+    let shortestPath = [];
+    let exit = {};
+
+    algorithm(maze);
+    
+    function algorithm(pos , maze) {
+
+        queue.push(start);
+
+        while(queue.length > 0) {
+    
+            let pos = queue.shift();
+        
+            addNode({row:pos.row + 1, col:pos.col, path:pos.path});
+            addNode({row:pos.row - 1, col:pos.col, path:pos.path});
+            addNode({row:pos.row, col:pos.col + 1, path:pos.path});
+            addNode({row:pos.row, col:pos.col - 1, path:pos.path});
+        }
+
+        if(!exitExist) {
+            console.log("You will never leave the maze!!!");
+            document.getElementById('print').innerHTML = 'You will never leave the maze!'
         }
     }
-}
 
-let queue = [];
+    function addNode(pos) {
 
-let steps = 0;
+        if(!In(pos)) {
+            end = true;
+            show(pos);
+            return;
+        }
 
-let pathLength = 300;
-let shortestPath = [];
-let exit = {};
+        if(maze[pos.row][pos.col] === ' ') {
+            let newPath = pos.path.slice();
 
-let end = false;
+            newPath.push({row:pos.row, col:pos.col});
+            queue.push({row:pos.row, col:pos.col, path:newPath});
 
-algorithm(maze);
- 
-function algorithm(maze) {
+            maze[pos.row][pos.col] = 'x';
 
-    queue.push(start);
-
-    while(queue.length > 0) {
-
-        let pos = queue.shift();
- 
-        addNode({row:pos.row + 1, col:pos.col, path:pos.path});
-        addNode({row:pos.row - 1, col:pos.col, path:pos.path});
-        addNode({row:pos.row, col:pos.col+1, path:pos.path});
-        addNode({row:pos.row, col:pos.col-1, path:pos.path});
+        }
     }
 
-    if(!end) {
-        console.log("You will never leave the maze!!!");
-    }
-}
+    // error solutions
 
-function addNode(pos) {
-
-    if(!inMaze(pos)) {
-        end = true;
-        show(pos);
-        return;
+    function In(pos) {
+        if(pos.row >= 0 && pos.row < maze.length && pos.col  >= 0 && pos.col < maze[0].length) {
+           return true;
+        }
     }
 
-    if(maze[pos.row][pos.col] === ' ') {
-        let newPath = pos.path.slice();
-                
-        newPath.push({row:pos.row, col:pos.col});
-        queue.push({row:pos.row, col:pos.col, path:newPath});
-        maze[pos.row][pos.col] = 0;
+    function show(pos) {
+        let path = pos.path;
 
-    }
-}
+        if (pathLength > path.length) {
+            pathLength = path.length;
+            shortestPath = path;
 
-// 'position not defined' solution --------------|
+            exit = {row:pos.row , col:pos.col};
+        }    
+    }  
 
-function inMaze(pos) {
-    if(pos.row >= 0 && pos.row < maze.length && pos.col  >= 0 && pos.col < maze[0].length) {
-       return true;
-    }
-}
-// 'position not defined' solution --------------|
+    // error solutions
 
-function show(pos) {
-    let path = pos.path;
 
-    if (pathLength > path.length) {
-        pathLength = path.length
-        shortestPath = path;
-        exit = {row:pos.row , col:pos.col};
-    }    
+    if (end) {
+
+        exitExist = true;
+        console.log('step', steps - steps , 'START' , startPosition);
+
+        shortestPath.forEach(node => {
+            
+            steps ++;
+            console.log('step' ,steps , node);
+        });
+
+        console.log('step' ,steps + 1 , `EXIT` , exit);        
+        document.getElementById("print").innerHTML = 'You escaped in ' + (steps + 1) + ' moves!';
     
-}
-
-if (end) {
-    console.log('step', steps - steps , 'START' , startPosition);
-
-    shortestPath.forEach(node => { 
-
-        steps ++;
-        console.log('step' ,steps , node)
-    });
-
-    console.log('step' ,steps + 1 , `EXIT` , exit);
+    }
 }
