@@ -1,0 +1,40 @@
+<html lang="en">
+    <head>
+        <title>Mazes: Simple Maze</title>
+
+        <link rel="stylesheet" href="10x8.css">
+
+        <meta charset="UTF-8">
+    </head>
+
+    <body>
+
+        <div class="maze" onclick="pickStart(event)">
+
+            <div id="app"></div>
+            <h1 id = 'print'></h1>
+    
+        </div>
+        
+        <button id="play" onclick="play(event)">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                play
+        </button>
+
+        <button id="clear" onclick="clear(event)">CLEAR</button>
+        <a href = "index.html" class = "back">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            go back
+        </a>
+
+        
+        <script src="maze.js"></script>
+
+    </body>
+</html>
