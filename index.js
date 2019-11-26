@@ -47,6 +47,8 @@ maze.map((row , y , arr) => {
 
 template.appendChild(canvas);
 
+/////////////////// CIRCLE //////////////////
+
 let circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
     circle.setAttribute('stroke', 'black');
     circle.setAttribute('stroke-width', '2');
@@ -56,29 +58,29 @@ let circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
 /////////////////// PICK POSITION /////////////////
 
 
-document.getElementById('print').innerHTML = 'Choose position!'
+document.getElementById('print').innerHTML = 'Choose starting position!'
 
 let rowY , colX;
 function pickStart(event) {
 
     let done = false;
 
-    document.getElementById('print').innerHTML = 'Position chosen!'
+    let play = document.getElementById('play');
+        play.style.visibility = 'visible'
+    document.getElementById('print').innerHTML = 'Starting position chosen!'
 
     if (!done) {
-        let clickX , clickY
 
-        if (event.offsetX) {
-            clickX = event.offsetX;
-            clickY = event.offsetY;
-        }
+        clickX = event.offsetX;
+        clickY = event.offsetY;
+        
 
         colX = Math.floor(clickX / 73);
         rowY = Math.floor(clickY / 73);
 
         if (maze[rowY][colX] != '*') {
             
-            circle.setAttribute('r', 30);
+            circle.setAttribute('r', 30);        
             circle.setAttribute('cx', colX * 73 + 35);
             circle.setAttribute('cy', rowY * 73 + 35);
         
@@ -99,8 +101,6 @@ function pickStart(event) {
 
 /////////////////// PLAY ///////////////////
 
-
-let coordinates = [];
 
 
 function play(event) { 
@@ -128,7 +128,6 @@ function play(event) {
     let queue = [];
 
     let steps = 0;
-
     let pathLength = 1000;
 
     let shortestPath = [];
@@ -152,7 +151,13 @@ function play(event) {
 
         if(!exitExist) {
             console.log("You will never leave the maze!!!");
-            document.getElementById('print').innerHTML = 'You will never leave the maze!'
+            document.getElementById('print').innerHTML = 'You will never leave the maze!';
+
+            let clear = document.getElementById('clear');
+                clear.style.visibility = 'visible';
+
+            let play = document.getElementById('play');
+                play.style.visibility = 'hidden';
         }
     }
 
@@ -161,6 +166,21 @@ function play(event) {
         if(!In(pos)) {
             end = true;
             show(pos);
+
+        // printing path
+            shortestPath.forEach(position => {
+                let circelPath = document.createElementNS('http://www.w3.org/2000/svg' , 'circle');
+                    circelPath.setAttribute('stroke', 'black');
+                    circelPath.setAttribute('stroke-width', '2');
+                    circelPath.setAttribute('fill', 'yellow');      
+                    circelPath.setAttribute('r' , 20);
+                    circelPath.setAttribute('cx' , position.col * 73 + 35);
+                    circelPath.setAttribute('cy' , position.row * 73 + 35);
+                                
+                canvas.appendChild(circelPath);
+
+            });
+
             return;
         }
 
@@ -199,17 +219,26 @@ function play(event) {
 
     if (end) {
 
+
         exitExist = true;
         console.log('step', steps - steps , 'START' , startPosition);
-
+        
         shortestPath.forEach(node => {
             
             steps ++;
             console.log('step' ,steps , node);
         });
 
-        console.log('step' ,steps + 1 , `EXIT` , exit);        
+        console.log('step' ,steps + 1 , `EXIT` , exit); 
+
         document.getElementById("print").innerHTML = 'You escaped in ' + (steps + 1) + ' moves!';
     
+        let clear = document.getElementById('clear');
+            clear.style.visibility = 'visible';
+
+        let play = document.getElementById('play');
+            play.style.visibility = 'hidden';
+
     }
 }
+
