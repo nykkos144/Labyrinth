@@ -75,14 +75,14 @@ function pickStart(event) {
         clickY = event.offsetY;
         
 
-        colX = Math.floor(clickX / 73);
-        rowY = Math.floor(clickY / 73);
+        colX = Math.floor(clickX / size);
+        rowY = Math.floor(clickY / size);
 
         if (maze[rowY][colX] != '*') {
             
             circle.setAttribute('r', 30);        
-            circle.setAttribute('cx', colX * 73 + 35);
-            circle.setAttribute('cy', rowY * 73 + 35);
+            circle.setAttribute('cx', colX * size + 35);
+            circle.setAttribute('cy', rowY * size + 35);
         
             canvas.appendChild(circle);
             template.appendChild(canvas);
@@ -174,8 +174,8 @@ function play(event) {
                     circelPath.setAttribute('stroke-width', '2');
                     circelPath.setAttribute('fill', 'yellow');      
                     circelPath.setAttribute('r' , 20);
-                    circelPath.setAttribute('cx' , position.col * 73 + 35);
-                    circelPath.setAttribute('cy' , position.row * 73 + 35);
+                    circelPath.setAttribute('cx' , position.col * size + 35);
+                    circelPath.setAttribute('cy' , position.row * size + 35);
                                 
                 canvas.appendChild(circelPath);
 
