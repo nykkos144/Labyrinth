@@ -10,10 +10,8 @@
     <body>
 
         <div class="maze" onclick="pickStart(event)">
-
             <div id="app"></div>
             <h1 id = 'print'></h1>
-    
         </div>
         
         <button id="play" onclick="play(event)">
@@ -24,13 +22,20 @@
                 play
         </button>
 
-        <button id="clear" onclick="clear(event)">CLEAR</button>
+        <button id="clear" value="Refresh Page" onClick="window.location.reload();">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                Clear
+        </button>
+
         <a href = "index.html" class = "back">
             <span></span>
             <span></span>
             <span></span>
             <span></span>
-            go back
+            main menu
         </a>
 
         
