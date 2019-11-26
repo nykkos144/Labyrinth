@@ -8,7 +8,7 @@ body{
 #print {
     position: absolute;
 
-    left: 25%;
+    left: 5%;
     top: 97%;
 }
 
@@ -24,12 +24,21 @@ body{
 }
 
 #clear {
-
     visibility: hidden;
+
     position: absolute;
 
-    top: 13%;
-    left: 11%;
+    top: 90%;
+    left: 15%;
+}
+
+#play {
+    visibility: hidden;
+
+    position: absolute;
+
+    top: 90%;
+    left: 15%;
 }
 
 .back {
@@ -38,13 +47,9 @@ body{
     top: 90%;
 }
 
-
 button 
 {
     position: absolute;
-
-    top: 90%;
-    left: 15%;
 
     transform: translate(-50%, -50%);
     color: #1670f0;
@@ -321,4 +326,5 @@ a span:nth-child(4)
     }
 
 }
+
 
